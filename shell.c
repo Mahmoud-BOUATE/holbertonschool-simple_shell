@@ -1,40 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/wait.h>
+#include <errno.h>
 
-extern char **environ;
+#define PROMPT "#cisfun$ "
+#define MAX_INPUT 1024
 
-int main(void)
-{
+int main(void) {
     char *line = NULL;
     size_t len = 0;
-    pid_t pid;
-    int status;
+    ssize_t nread;
 
-    while (1)
-    {
-        printf("($) ");               // Affiche le prompt
-        if (getline(&line, &len, stdin) == -1) // Ctrl+D ou erreur
+    while (1) {
+        // Afficher le prompt
+        printf("%s", PROMPT);
+        fflush(stdout);
+
+        // Lire la ligne de commande
+        nread = getline(&line, &len, stdin);
+        if (nread == -1) { // Ctrl+D ou erreur
+            printf("\n");
             break;
-
-        line[strcspn(line, "\n")] = '\0'; // Supprime le \n
-
-        pid = fork();                  // Crée un processus enfant
-        if (pid == 0)                  // Enfant
-        {
-            execve(line, NULL, environ);
-            fprintf(stderr, "%s: not found\n", line); // Si execve échoue
-            exit(1);
         }
-        else if (pid > 0)              // Parent
-        {
-            wait(&status);             // Attend que l’enfant termine
-        }
-        else
-        {
+
+        // Supprimer le \n final
+        if (line[nread - 1] == '\n')
+            line[nread - 1] = '\0';
+
+        // Ignorer les lignes vides
+        if (strlen(line) == 0)
+            continue;
+
+        pid_t pid = fork();
+        if (pid == -1) {
             perror("fork");
-            exit(1);
+            continue;
+        } else if (pid == 0) { // Processus enfant
+            char *argv[] = {line, NULL};
+            if (execve(line, argv, environ) == -1) {
+                fprintf(stderr, "%s: No such file or directory\n", line);
+                exit(EXIT_FAILURE);
+            }
+        } else { // Processus parent
+            int status;
+            waitpid(pid, &status, 0);
         }
     }
 
