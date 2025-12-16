@@ -17,17 +17,23 @@ int main(void)
     ssize_t nread;
     int status;
     pid_t pid;
+    int interactive;
+
+    interactive = isatty(STDIN_FILENO);
 
     while (1)
     {
-        /* Afficher le prompt */
-        printf("%s", PROMPT);
-        fflush(stdout);
+        if (interactive)
+        {
+            printf("%s", PROMPT);
+            fflush(stdout);
+        }
 
         nread = getline(&line, &len, stdin);
         if (nread == -1) /* Ctrl+D ou erreur */
         {
-            printf("\n");
+            if (interactive)
+                printf("\n");
             break;
         }
 
