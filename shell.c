@@ -10,9 +10,31 @@ extern char **environ;
 #define PROMPT "#cisfun$ "
 #define MAX_INPUT 1024
 
+/* Fonction pour enlever les espaces en début et fin */
+char *trim(char *str)
+{
+    char *end;
+
+    /* Supprimer les espaces de début */
+    while (*str == ' ' || *str == '\t')
+        str++;
+
+    if (*str == 0) /* chaîne vide */
+        return str;
+
+    /* Supprimer les espaces de fin */
+    end = str + strlen(str) - 1;
+    while (end > str && (*end == ' ' || *end == '\t'))
+        end--;
+
+    *(end + 1) = '\0';
+    return str;
+}
+
 int main(void)
 {
     char *line = NULL;
+    char *line_trimmed;
     size_t len = 0;
     ssize_t nread;
     int status;
@@ -41,8 +63,11 @@ int main(void)
         if (line[nread - 1] == '\n')
             line[nread - 1] = '\0';
 
+        /* Trim des espaces */
+        line_trimmed = trim(line);
+
         /* Ignorer les lignes vides */
-        if (strlen(line) == 0)
+        if (strlen(line_trimmed) == 0)
             continue;
 
         pid = fork();
@@ -54,12 +79,12 @@ int main(void)
         else if (pid == 0)
         {
             char *argv[2];
-            argv[0] = line;
+            argv[0] = line_trimmed;
             argv[1] = NULL;
 
-            if (execve(line, argv, environ) == -1)
+            if (execve(line_trimmed, argv, environ) == -1)
             {
-                fprintf(stderr, "%s: No such file or directory\n", line);
+                fprintf(stderr, "%s: No such file or directory\n", line_trimmed);
                 exit(EXIT_FAILURE);
             }
         }
