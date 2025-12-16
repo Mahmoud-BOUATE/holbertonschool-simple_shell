@@ -1,0 +1,43 @@
+
+---
+
+### `man_1_simple_shell`
+
+```man
+.TH SIMPLE_SHELL 1 "December 2025" "v1.0" "Simple Shell Manual"
+.SH NAME
+simple_shell \- a simple Unix command line interpreter
+
+.SH SYNOPSIS
+.B simple_shell
+[commands]
+
+.SH DESCRIPTION
+`simple_shell` is a basic shell written in C that replicates the behavior of
+the standard Unix shell (/bin/sh). It allows the execution of commands,
+both in interactive mode and through input redirection (non-interactive mode).
+
+.SH USAGE
+Interactive mode:
+.EX
+$ ./hsh
+($) /bin/ls
+hsh main.c shell.c
+($) exit
+.EE
+
+Non-interactive mode:
+.EX
+$ echo "/bin/ls" | ./hsh
+hsh main.c shell.c test_ls_2
+.EE
+
+.SH EXIT STATUS
+The shell exits with:
+.IP "0"
+if successful.
+.IP "Non-zero"
+if an error occurs.
+
+.SH AUTHOR
+Julien Barbier
