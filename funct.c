@@ -66,6 +66,7 @@ char *find_in_path(char *command)
     char *path_env;
     char *paths[256];
     char *token;
+    char *path_copy;
 
     if (strchr(command, '/'))
     {
@@ -85,13 +86,16 @@ char *find_in_path(char *command)
         }
     }
 
-    /* Si PATH vide ou inexistant, impossible de trouver la commande */
     if (!path_env || path_env[0] == '\0')
+        return NULL;
+
+    path_copy = strdup(path_env);
+    if (!path_copy)
         return NULL;
 
     /* Découper les chemins de PATH */
     i = 0;
-    token = strtok(path_env, ":");
+    token = strtok(path_copy, ":");
     while (token && i < 255)
     {
         paths[i++] = token;
@@ -103,9 +107,13 @@ char *find_in_path(char *command)
     {
         snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], command);
         if (access(full_path, X_OK) == 0)
+        {
+            free(path_copy);
             return full_path;
+        }
     }
 
+    free(path_copy);
     return NULL;
 }
 
@@ -123,7 +131,7 @@ void execute_command(char **argv)
     if (!cmd_path)
     {
         fprintf(stderr, "%s: not found\n", argv[0]);
-        return; /* PAS DE fork si commande introuvable */
+        return;
     }
 
     pid = fork();
