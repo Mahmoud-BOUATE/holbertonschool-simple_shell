@@ -75,7 +75,6 @@ char *find_in_path(char *command)
         return NULL;
     }
 
-    /* Récupérer PATH depuis environ */
     path_env = NULL;
     for (i = 0; environ[i]; i++)
     {
@@ -93,7 +92,6 @@ char *find_in_path(char *command)
     if (!path_copy)
         return NULL;
 
-    /* Découper les chemins de PATH */
     i = 0;
     token = strtok(path_copy, ":");
     while (token && i < 255)
@@ -130,8 +128,8 @@ void execute_command(char **argv)
     cmd_path = find_in_path(argv[0]);
     if (!cmd_path)
     {
-        fprintf(stderr, "%s: not found\n", argv[0]);
-        return;
+        fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+        exit(127);
     }
 
     pid = fork();
