@@ -85,10 +85,11 @@ char *find_in_path(char *command)
         }
     }
 
+    /* Si PATH vide ou inexistant, impossible de trouver la commande */
     if (!path_env || path_env[0] == '\0')
         return NULL;
 
-    /* Découper les chemins */
+    /* Découper les chemins de PATH */
     i = 0;
     token = strtok(path_env, ":");
     while (token && i < 255)
