@@ -58,14 +58,15 @@ void split_line(char *line, char **argv)
     argv[i] = NULL;
 }
 
-/* Recherche la commande dans un PATH fixe (sans getenv) */
+/* Recherche la commande dans PATH via environ */
 char *find_in_path(char *command)
 {
     static char full_path[1024];
-    char *paths[] = {"/bin", "/usr/bin", NULL};
     int i;
+    char *path_env;
+    char *paths[256];
+    char *token;
 
-    /* Si la commande contient un /, tester directement */
     if (strchr(command, '/'))
     {
         if (access(command, X_OK) == 0)
@@ -73,7 +74,30 @@ char *find_in_path(char *command)
         return NULL;
     }
 
-    /* Parcours des dossiers standards */
+    /* Récupérer PATH depuis environ */
+    path_env = NULL;
+    for (i = 0; environ[i]; i++)
+    {
+        if (strncmp(environ[i], "PATH=", 5) == 0)
+        {
+            path_env = environ[i] + 5;
+            break;
+        }
+    }
+
+    if (!path_env || path_env[0] == '\0')
+        return NULL;
+
+    /* Découper les chemins */
+    i = 0;
+    token = strtok(path_env, ":");
+    while (token && i < 255)
+    {
+        paths[i++] = token;
+        token = strtok(NULL, ":");
+    }
+    paths[i] = NULL;
+
     for (i = 0; paths[i]; i++)
     {
         snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], command);
