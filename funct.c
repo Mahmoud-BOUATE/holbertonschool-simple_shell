@@ -145,5 +145,7 @@ void execute_command(char **argv)
     else
     {
         waitpid(pid, &status, 0);
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 127)
+            exit(127);
     }
 }
