@@ -1,5 +1,6 @@
 #include "shell.h"
 
+/* recherche la commande dans PATH */
 char *find_in_path(char *command)
 {
     static char full_path[1024];
@@ -55,26 +56,27 @@ char *find_in_path(char *command)
     free(path_copy);
     return NULL;
 }
-void execute_command(char **argv)
+
+/* exécution des commandes externes */
+int execute_command(char **argv)
 {
     pid_t pid;
     int status;
     char *cmd_path;
 
     if (!argv[0])
-        return;
+        return 0;
 
     cmd_path = find_in_path(argv[0]);
     if (!cmd_path)
     {
         fprintf(stderr, "%s: not found\n", argv[0]);
-        /* on fixe le code de sortie à 127 si commande non trouvée */
-        exit(127);
+        return 127;
     }
 
     pid = fork();
     if (pid == -1)
-        return;
+        return 1;
 
     if (pid == 0)
     {
@@ -86,6 +88,7 @@ void execute_command(char **argv)
     {
         waitpid(pid, &status, 0);
         if (WIFEXITED(status))
-            exit(WEXITSTATUS(status));
+            return WEXITSTATUS(status);
     }
+    return 0;
 }

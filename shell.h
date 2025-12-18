@@ -19,7 +19,7 @@ ssize_t read_input(char **line, size_t *len, int interactive);
 void print_prompt(int interactive);
 
 /* execute.c */
-void execute_command(char **argv);
+int execute_command(char **argv);
 char *find_in_path(char *command);
 
 /* builtins.c */

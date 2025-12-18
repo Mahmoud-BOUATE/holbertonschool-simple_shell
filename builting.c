@@ -1,18 +1,17 @@
 #include "shell.h"
 
-/* Implémentation du built-in exit */
+/* exit built-in */
 int handle_exit(char **argv)
 {
     if (argv[0] && strcmp(argv[0], "exit") == 0)
-        return 1;  /* retourne 1 pour signaler la sortie */
+        return 1;  /* signaler la sortie */
     return 0;
 }
 
-/* Implémentation du built-in env */
+/* env built-in */
 int handle_env(char **argv)
 {
     int i;
-
     if (argv[0] && strcmp(argv[0], "env") == 0)
     {
         for (i = 0; environ[i]; i++)
