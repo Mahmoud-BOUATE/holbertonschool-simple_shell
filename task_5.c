@@ -1,16 +1,18 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-/**
- * handle_exit - gère la commande exit
- * @argv: tableau d'arguments
- *
- * Si argv[0] est "exit", quitte le shell avec code 0.
- * Retourne 0 sinon.
- */
 int handle_exit(char **argv)
 {
-    if (argv[0] && strcmp(argv[0], "exit") == 0)
-        exit(0);  /* termine le shell proprement */
+    if (argv[0])
+    {
+        // Supprimer le '\n' si présent à la fin
+        size_t len = strlen(argv[0]);
+        if (len > 0 && argv[0][len - 1] == '\n')
+            argv[0][len - 1] = '\0';
+
+        if (strcmp(argv[0], "exit") == 0)
+            exit(0);
+    }
     return 0;
 }
