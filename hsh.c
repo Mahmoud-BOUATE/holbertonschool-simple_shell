@@ -22,6 +22,11 @@ int main(void)
             continue;
 
         split_line(line_trimmed, argv);
+
+        /* Gestion de la commande interne exit */
+        handle_exit(argv);
+
+        /* Exécution des commandes externes */
         execute_command(argv);
     }
 
