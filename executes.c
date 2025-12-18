@@ -55,7 +55,6 @@ char *find_in_path(char *command)
     free(path_copy);
     return NULL;
 }
-
 void execute_command(char **argv)
 {
     pid_t pid;
