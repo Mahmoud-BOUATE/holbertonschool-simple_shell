@@ -62,29 +62,13 @@ void split_line(char *line, char **argv)
 char *find_in_path(char *command)
 {
     static char full_path[1024];
+    char *path_env, *path_copy, *token;
     int i;
-    char *path_env;
-    char *paths[256];
-    char *token;
-    char *path_copy;
 
     if (strchr(command, '/'))
-    {
-        if (access(command, X_OK) == 0)
-            return command;
-        return NULL;
-    }
+        return (access(command, X_OK) == 0) ? command : NULL;
 
-    path_env = NULL;
-    for (i = 0; environ[i]; i++)
-    {
-        if (strncmp(environ[i], "PATH=", 5) == 0)
-        {
-            path_env = environ[i] + 5;
-            break;
-        }
-    }
-
+    path_env = getenv("PATH");
     if (!path_env || path_env[0] == '\0')
         return NULL;
 
@@ -92,23 +76,16 @@ char *find_in_path(char *command)
     if (!path_copy)
         return NULL;
 
-    i = 0;
     token = strtok(path_copy, ":");
-    while (token && i < 255)
+    while (token)
     {
-        paths[i++] = token;
-        token = strtok(NULL, ":");
-    }
-    paths[i] = NULL;
-
-    for (i = 0; paths[i]; i++)
-    {
-        snprintf(full_path, sizeof(full_path), "%s/%s", paths[i], command);
+        snprintf(full_path, sizeof(full_path), "%s/%s", token, command);
         if (access(full_path, X_OK) == 0)
         {
             free(path_copy);
             return full_path;
         }
+        token = strtok(NULL, ":");
     }
 
     free(path_copy);
@@ -129,7 +106,7 @@ void execute_command(char **argv)
     if (!cmd_path)
     {
         fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-        exit(127);
+        return;
     }
 
     pid = fork();
@@ -140,12 +117,10 @@ void execute_command(char **argv)
     {
         execve(cmd_path, argv, environ);
         perror(argv[0]);
-        exit(EXIT_FAILURE);
+        _exit(127);
     }
     else
     {
         waitpid(pid, &status, 0);
-        if (WIFEXITED(status) && WEXITSTATUS(status) == 127)
-            exit(127);
     }
 }
