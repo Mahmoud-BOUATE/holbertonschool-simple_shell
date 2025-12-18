@@ -68,8 +68,9 @@ void execute_command(char **argv)
     cmd_path = find_in_path(argv[0]);
     if (!cmd_path)
     {
-        fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-        return;
+        fprintf(stderr, "%s: not found\n", argv[0]);
+        /* on fixe le code de sortie à 127 si commande non trouvée */
+        exit(127);
     }
 
     pid = fork();
@@ -85,5 +86,7 @@ void execute_command(char **argv)
     else
     {
         waitpid(pid, &status, 0);
+        if (WIFEXITED(status))
+            exit(WEXITSTATUS(status));
     }
 }
