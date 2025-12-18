@@ -1,64 +1,5 @@
 #include "shell.h"
 
-/* Affiche le prompt */
-void print_prompt(int interactive)
-{
-    if (interactive)
-        write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
-}
-
-/* Lecture de l'entrée utilisateur */
-ssize_t read_input(char **line, size_t *len, int interactive)
-{
-    ssize_t nread = getline(line, len, stdin);
-
-    if (nread == -1)
-    {
-        if (interactive)
-            write(STDOUT_FILENO, "\n", 1);
-        return -1;
-    }
-
-    if ((*line)[nread - 1] == '\n')
-        (*line)[nread - 1] = '\0';
-
-    return nread;
-}
-
-/* Supprime espaces début et fin */
-char *trim(char *str)
-{
-    char *end;
-
-    while (*str == ' ' || *str == '\t')
-        str++;
-
-    if (*str == '\0')
-        return str;
-
-    end = str + strlen(str) - 1;
-    while (end > str && (*end == ' ' || *end == '\t'))
-        end--;
-
-    *(end + 1) = '\0';
-    return str;
-}
-
-/* Découpe la ligne en arguments */
-void split_line(char *line, char **argv)
-{
-    int i = 0;
-    char *token = strtok(line, " \t");
-
-    while (token && i < MAX_TOKENS - 1)
-    {
-        argv[i++] = token;
-        token = strtok(NULL, " \t");
-    }
-    argv[i] = NULL;
-}
-
-/* Recherche la commande dans PATH via environ */
 char *find_in_path(char *command)
 {
     static char full_path[1024];
@@ -115,7 +56,6 @@ char *find_in_path(char *command)
     return NULL;
 }
 
-/* Exécution de la commande */
 void execute_command(char **argv)
 {
     pid_t pid;
@@ -129,7 +69,7 @@ void execute_command(char **argv)
     if (!cmd_path)
     {
         fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-        exit(127);
+        return;
     }
 
     pid = fork();
@@ -145,7 +85,5 @@ void execute_command(char **argv)
     else
     {
         waitpid(pid, &status, 0);
-        if (WIFEXITED(status) && WEXITSTATUS(status) == 127)
-            exit(127);
     }
 }

@@ -6,9 +6,7 @@ int main(void)
     char *line_trimmed;
     char *argv[MAX_TOKENS];
     size_t len = 0;
-    int interactive;
-
-    interactive = isatty(STDIN_FILENO);
+    int interactive = isatty(STDIN_FILENO);
 
     while (1)
     {
@@ -23,10 +21,13 @@ int main(void)
 
         split_line(line_trimmed, argv);
 
-        /* Gestion de la commande interne exit */
-        handle_exit(argv);
+        /* Built-ins */
+        if (handle_exit(argv))
+            break;
+        if (handle_env(argv))
+            continue;
 
-        /* Exécution des commandes externes */
+        /* Commandes externes */
         execute_command(argv);
     }
 

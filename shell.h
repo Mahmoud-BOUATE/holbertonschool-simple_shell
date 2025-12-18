@@ -16,9 +16,14 @@ extern char **environ;
 char *trim(char *str);
 void split_line(char *line, char **argv);
 ssize_t read_input(char **line, size_t *len, int interactive);
-void execute_command(char **argv);
 void print_prompt(int interactive);
-int handle_exit(char **argv);
 
+/* execute.c */
+void execute_command(char **argv);
+char *find_in_path(char *command);
+
+/* builtins.c */
+int handle_exit(char **argv);
+int handle_env(char **argv);
 
 #endif
