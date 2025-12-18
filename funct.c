@@ -129,7 +129,7 @@ void execute_command(char **argv)
     if (!cmd_path)
     {
         fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
-        exit(127);
+        return;
     }
 
     pid = fork();
@@ -145,7 +145,5 @@ void execute_command(char **argv)
     else
     {
         waitpid(pid, &status, 0);
-        if (WIFEXITED(status) && WEXITSTATUS(status) == 127)
-            exit(127);
     }
 }
