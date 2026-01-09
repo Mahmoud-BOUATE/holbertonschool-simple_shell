@@ -1,43 +1,48 @@
+.TH HSH 1 "january 2024" "v1.0" "Simple Shell Manual"
 
----
-
-### `man_1_simple_shell`
-
-```man
-.TH SIMPLE_SHELL 1 "December 2025" "v1.0" "Simple Shell Manual"
 .SH NAME
-simple_shell \- a simple Unix command line interpreter
+hsh \- a simple Unix command line interpreter
 
 .SH SYNOPSIS
-.B simple_shell
-[commands]
+.B hsh
 
 .SH DESCRIPTION
-`simple_shell` is a basic shell written in C that replicates the behavior of
-the standard Unix shell (/bin/sh). It allows the execution of commands,
-both in interactive mode and through input redirection (non-interactive mode).
+hsh is a simple Unix shell written in C.
+It allows users to execute commands entered by the user or read from standard
+input. The shell works in both interactive and non-interactive modes.
+
+The shell supports execution of commands using absolute paths, relative paths,
+and PATH environment variable resolution.
 
 .SH USAGE
 Interactive mode:
 .EX
 $ ./hsh
-($) /bin/ls
-hsh main.c shell.c
+($) ls
+main.c shell.h helpers.c
 ($) exit
 .EE
 
 Non-interactive mode:
 .EX
-$ echo "/bin/ls" | ./hsh
-hsh main.c shell.c test_ls_2
+$ echo "ls" | ./hsh
+main.c shell.h helpers.c
 .EE
 
+.SH BUILTINS
+The following built-in commands are supported:
+
+.TP
+.B exit
+Exit the shell.
+
+.TP
+.B env
+Print the current environment.
+
 .SH EXIT STATUS
-The shell exits with:
-.IP "0"
-if successful.
-.IP "Non-zero"
-if an error occurs.
+The shell exits with status 0 on success.
+If an error occurs, a non-zero value is returned.
 
 .SH AUTHOR
-Julien Barbier
+BOUATE Mahmoud
