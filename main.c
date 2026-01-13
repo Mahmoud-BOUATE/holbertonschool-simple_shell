@@ -10,7 +10,7 @@ int main(void)
     int exit_status = 0;
 
     while (1)
-    {
+    { 
         print_prompt(interactive);
 
         if (read_input(&line, &len, interactive) == -1)
