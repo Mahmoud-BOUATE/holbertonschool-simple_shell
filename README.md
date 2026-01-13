@@ -55,3 +55,4 @@ hsh main.c shell.c helpers.c executes.c builtins.c shell.h
 ```bash
 $ gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
 
+# holbertonschool-chatgpt-introduction
